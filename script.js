@@ -1,36 +1,62 @@
 // Smooth Scrolling for Navigation Links
 document.querySelectorAll('nav ul li a').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        const targetId = this.getAttribute('href').substring(1);
-        const targetElement = document.getElementById(targetId);
-        
-        if (targetElement) {
-            const navHeight = document.querySelector('nav').offsetHeight;
-            const bufferOffset = 140; // Adjust this value if needed
-            const targetPosition = targetElement.offsetTop - navHeight - bufferOffset;
+        const href = this.getAttribute('href');
+        if (href.startsWith('#')) {
+            e.preventDefault();
+            const targetElement = document.querySelector(href);
+            const offset = window.innerWidth < 768 ? 440 : 165; // Adjust the offset for mobile and desktop
+            const elementPosition = targetElement.getBoundingClientRect().top + window.scrollY;
+            const offsetPosition = elementPosition - offset;
 
             window.scrollTo({
-                top: targetPosition,
+                top: offsetPosition,
                 behavior: 'smooth'
             });
+
+            // Close the dropdown menu if a link is clicked
+            closeDropdown();
         }
     });
 });
 
-// Contact Form Submission
-document.getElementById('contact-form')?.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const message = document.getElementById('message').value;
+// Function to close dropdown menu
+function closeDropdown() {
+    const dropdownContent = document.querySelector('.dropdown-content');
+    if (dropdownContent) {
+        dropdownContent.style.display = 'none';
+    }
+}
 
-    alert(`Thank you, ${name}! Your message has been received.`);
-    
-    // Clear form
-    document.getElementById('contact-form').reset();
+// Function to toggle dropdown menu
+function toggleDropdown() {
+    const dropdownContent = document.querySelector('.dropdown-content');
+    if (dropdownContent) {
+        if (dropdownContent.style.display === 'block') {
+            dropdownContent.style.display = 'none';
+        } else {
+            dropdownContent.style.display = 'block';
+        }
+    }
+}
+
+// Add event listener to the dropdown button
+document.querySelector('.dropbtn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggleDropdown();
+});
+
+// Close the dropdown menu if clicking outside of it
+document.addEventListener('click', function(e) {
+    const dropdownContent = document.querySelector('.dropdown-content');
+    if (dropdownContent && !e.target.closest('.dropdown')) {
+        dropdownContent.style.display = 'none';
+    }
+});
+
+// Prevent closing the dropdown menu when clicking inside it
+document.querySelector('.dropdown-content').addEventListener('click', function(e) {
+    e.stopPropagation();
 });
 
 // Fancy Effects
